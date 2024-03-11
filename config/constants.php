@@ -3,7 +3,7 @@
     session_start();
 
     // Create Constants to Store Non-Repeating Values
-    define('SITEURL', 'http://192.168.1.3/files/foodorderlatest/');
+    define('SITEURL', 'http://192.168.1.3/files/alabites2/Alabites/');
     define('LOCALHOST', ''); // Corrected localhost value
 
     define('DB_USERNAME', 'root');

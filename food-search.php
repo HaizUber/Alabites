@@ -75,16 +75,19 @@
                             </div>
 
                             <div class="food-menu-desc">
-                                <h4><?php echo $title; ?></h4>
-                                <p class="food-price">₱<?php echo $price; ?></p>
-                                <p class="food-detail">
-                                    <?php echo $description; ?>
-                                </p>
-                                <br>
+  <h4><?php echo $title; ?></h4>
+  <p class="food-price">₱<?php echo $price; ?></p>
+  <p class="food-detail">
+    <?php echo $description; ?>
+  </p>
+  <br>
+  <?php if ($isAvailable) { ?>
+    <input type="checkbox" class="food-cart-item" data-food-id="<?php echo $id; ?>" data-food-price="<?php echo $price; ?>"> Add to Cart
+  <?php } else { ?>
+    <span class="unavailable-label">Not Available</span>
+  <?php } ?>
+</div>
 
-                                 <a href="<?php echo SITEURL; ?>order.php?food_id=<?php echo $id; ?>" class="btn btn-primary">Order Now</a>
-                            </div>
-                        </div>
 
                         <?php
                     }

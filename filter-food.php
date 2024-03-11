@@ -80,12 +80,19 @@ if (mysqli_num_rows($result) > 0) {
             </div>
 
             <div class="food-menu-desc">
-                <h4><?php echo $title; ?></h4>
-                <p class="food-price">₱<?php echo $price; ?></p>
-                <p class="food-detail">
-                    <?php echo $description; ?>
-                </p>
-                <br>
+  <h4><?php echo $title; ?></h4>
+  <p class="food-price">₱<?php echo $price; ?></p>
+  <p class="food-detail">
+    <?php echo $description; ?>
+  </p>
+  <br>
+  <?php if ($isAvailable) { ?>
+    <input type="checkbox" class="food-cart-item" data-food-id="<?php echo $id; ?>" data-food-price="<?php echo $price; ?>"> Add to Cart
+  <?php } else { ?>
+    <span class="unavailable-label">Not Available</span>
+  <?php } ?>
+</div>
+
 
                 <?php if ($isGrayscale) { ?>
                     <span class="unavailable-label">Not Available</span>

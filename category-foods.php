@@ -105,15 +105,18 @@ if ($websiteClosed) {
                             <h4><?php echo $title; ?></h4>
                             <p class="food-price">₱<?php echo $price; ?></p>
                             <p class="food-detail">
-                                <?php echo $description; ?>
-                            </p>
+                             <?php echo $description; ?>
+                             </p>
                             <br>
-
                             <?php if ($isAvailable) { ?>
-                                <a href="<?php echo SITEURL; ?>order.php?food_id=<?php echo $id; ?>" class="btn btn-primary">Order Now</a>
+                                <button class="btn btn-primary add-to-cart" data-food-id="<?php echo $id; ?>" data-food-price="<?php echo $price; ?>" data-food-name="<?php echo $title; ?>">Add to Cart</button>
+
+
                             <?php } else { ?>
-                                <span class="unavailable-label">Not Available</span>
+                                 <span class="unavailable-label">Not Available</span>
                             <?php } ?>
+
+                            </div>
                         </div>
                     </div>
                     <?php
@@ -122,11 +125,206 @@ if ($websiteClosed) {
                 echo "<div class='error'>Food not found.</div>";
             }
             ?>
+<!-- Floating button -->
+<div id="floating-button" class="floating-button">
+    <a href="#" id="cart-icon-link">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cart-counter" class="cart-counter">0</span>
+    </a>
+    <div id="cart-dropdown" class="cart-dropdown">
+        <ul id="cart-items-list" class="cart-items-list"></ul>
+    </div>
+</div>
+<div id="cart-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Cart Items</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <table id="cart-items-table" class="cart-items-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items-modal">
+                    <!-- Cart items will be dynamically added here -->
+                </tbody>
+            </table>
+            <p id="cart-total-modal" class="cart-total"></p>
+        </div>
+        <div class="modal-footer">
+            <button id="checkout-button-modal">Checkout</button>
+        </div>
+    </div>
+</div>
+
+
         </div>
         <div class="clearfix"></div>
     </div>
 </section>
 <style>
+.floating-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999; /* Ensure the button appears above other content */
+}
+
+.floating-button a {
+    display: block;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    text-decoration: none;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.floating-button a:hover {
+    background-color: #0056b3;
+}
+
+/* Style for modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Style for modal content */
+.modal-content {
+    background-color: #fff;
+    margin: 20% auto;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%;
+    overflow: hidden; /* Ensure modal content doesn't overflow */
+}
+
+/* Style for modal header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Style for close button */
+.close {
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Style for modal body */
+.modal-body {
+    margin-bottom: 20px;
+    overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+}
+
+/* Style for modal footer */
+.modal-footer {
+    text-align: center;
+}
+
+/* Style for checkout button */
+#checkout-button-modal {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#checkout-button-modal:hover {
+    background-color: #0056b3;
+}
+
+/* Style for table */
+.cart-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Style for table headers */
+.cart-items-table th {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Style for table rows */
+.cart-items-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top; /* Align content at the top of each cell */
+}
+
+/* Style for alternate row background */
+.cart-items-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Animation for modal */
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    animation: slideIn 0.5s forwards;
+}
+
+.modal-content {
+    animation: fadeIn 0.5s forwards;
+}
+#cart-total-modal {
+    font-weight: bold;
+    font-size: 18px;
+    text-align: right;
+    color: red; /* Or any other color that makes it stand out */
+}
+
+
+
 /* Define styles for food menu boxes */
 .food-menu-box {
     width: 100%; /* Full width for all screens */
@@ -292,48 +490,187 @@ if ($websiteClosed) {
     }
 }
 </style>
-
 <script>
-    const searchInput = document.getElementById('food-search-input');
-    const foodMenuContainer = document.getElementById('food-menu-container');
+document.addEventListener("DOMContentLoaded", function() {
+    const floatingButton = document.getElementById('floating-button');
+    const cartDropdown = document.getElementById('cart-dropdown');
+    const cartModal = document.getElementById('cart-modal');
+    const closeCartModal = document.querySelector('.close');
+    const cartItemsModal = document.getElementById('cart-items-modal');
 
-    searchInput.addEventListener('input', function () {
-        const searchText = this.value.trim();
-        const category_id = <?php echo $category_id; ?>;
+    // Event listener for floating shopping cart button
+    floatingButton.addEventListener('click', function() {
+        // Clear the modal content first
+        cartItemsModal.innerHTML = '';
 
-        // Check if there is a search text
-        if (searchText !== '') {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'filter-food.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    foodMenuContainer.innerHTML = xhr.responseText;
-                }
-            };
-            xhr.send('search=' + searchText + '&category_id=' + category_id);
-        } else {
-            // Display all food items when the search input is empty
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'filter-food.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    foodMenuContainer.innerHTML = xhr.responseText;
-                }
-            };
-            xhr.send('search=&category_id=' + category_id);
+        // Retrieve cart items from localStorage
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+// Populate the modal with cart items in table format
+cartItems.forEach(function(item) {
+    // Create a table row for each cart item
+    const row = document.createElement('tr');
+
+    // Create table cells for each item detail
+    const nameCell = document.createElement('td');
+    const priceCell = document.createElement('td');
+    const quantityCell = document.createElement('td');
+    const totalCell = document.createElement('td');
+
+    // Calculate total price for the item
+    const totalPrice = item.price * item.quantity;
+
+    // Set text content for table cells
+    nameCell.textContent = item.name;
+    priceCell.textContent = '₱' + item.price.toFixed(2);
+    quantityCell.textContent = item.quantity;
+    totalCell.textContent = '₱' + totalPrice.toFixed(2);
+
+    // Append cells to the row
+    row.appendChild(nameCell);
+    row.appendChild(priceCell);
+    row.appendChild(quantityCell);
+    row.appendChild(totalCell);
+
+    // Append the row to the table body
+    cartItemsModal.appendChild(row);
+});
+
+
+        // Show the modal
+        cartModal.style.display = 'block';
+    });
+
+    // Close the modal when clicking the close button
+    closeCartModal.addEventListener('click', function() {
+        cartModal.style.display = 'none';
+    });
+
+    // Close the modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target === cartModal) {
+            cartModal.style.display = 'none';
         }
     });
 
-</script>
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const animationContainer = document.getElementById('animation-container');
-        animationContainer.style.opacity = '1';
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const foodId = this.dataset.foodId;
+            const foodPrice = parseFloat(this.dataset.foodPrice);
+            const foodName = this.dataset.foodName;
+
+            addToCart(foodId, foodPrice, foodName);
+            updateCartModalContent();
+        });
     });
-</script>
 
+    function addToCart(foodId, foodPrice, foodName) {
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const existingItemIndex = cartItems.findIndex(item => item.id === foodId);
+
+        if (existingItemIndex !== -1) {
+            cartItems[existingItemIndex].quantity++;
+        } else {
+            cartItems.push({ id: foodId, name: foodName, price: foodPrice, quantity: 1 });
+        }
+
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        updateCartCounter();
+    }
+
+    function updateCartCounter() {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartIconCounterElement = document.getElementById('cart-counter');
+
+        if (cartIconCounterElement) {
+            cartIconCounterElement.textContent = cartItems.reduce((total, item) => total + item.quantity, 0);
+        }
+    }
+
+    window.addEventListener('beforeunload', function() {
+        localStorage.removeItem('cartItems');
+    });
+
+    function updateCartModalContent() {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartItemsList = document.getElementById('cart-items-list');
+
+        cartItemsList.innerHTML = '';
+
+        cartItems.forEach(function (item) {
+            const listItem = document.createElement('li');
+            const totalPrice = item.price * item.quantity;
+
+            listItem.textContent = `Name: ${item.name}, Price: ₱${item.price.toFixed(2)}, Quantity: ₱{item.quantity}, Total: ₱${totalPrice.toFixed(2)}`;
+            cartItemsList.appendChild(listItem);
+        });
+
+        const totalPrice = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        document.getElementById('cart-total-modal').textContent = `Total: ₱${totalPrice.toFixed(2)}`;
+    }
+
+    floatingButton.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent the event from bubbling up to the window
+        cartDropdown.style.display = 'block'; // Show the modal
+    });
+
+    // Close the modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target !== cartDropdown && !cartDropdown.contains(event.target)) {
+            cartDropdown.style.display = 'none'; // Hide the modal
+        }
+    });
+
+    window.addEventListener('click', function (event) {
+        const modal = document.getElementById('cart-modal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    document.getElementById('checkout-button-modal').addEventListener('click', function () {
+        window.location.href = 'checkout.php';
+    });
+});
+
+const searchInput = document.getElementById('food-search-input');
+const foodMenuContainer = document.getElementById('food-menu-container');
+const category_id = <?php echo $category_id; ?>;
+
+searchInput.addEventListener('input', function () {
+    const searchText = this.value.trim();
+
+    if (searchText !== '') {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'filter-food.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                foodMenuContainer.innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send('search=' + searchText + '&category_id=' + category_id);
+    } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'filter-food.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                foodMenuContainer.innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send('search=&category_id=' + category_id);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const animationContainer = document.getElementById('animation-container');
+    if (animationContainer) {
+        animationContainer.style.opacity = '1';
+    }
+});
+</script>
 
 <?php include('partials-front/footer.php'); ?>
