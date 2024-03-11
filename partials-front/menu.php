@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering to prevent header errors
 include('config/constants.php');
 
 // Fetch food data from the database
@@ -14,6 +15,8 @@ if (mysqli_num_rows($result) > 0) {
 
 // Encode food data into JSON format
 $foodJson = json_encode($foodData);
+
+ob_end_clean(); // Clean the output buffer before sending headers
 ?>
 
     <!DOCTYPE html>
